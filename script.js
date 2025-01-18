@@ -18,11 +18,16 @@ const createPlayer = (name, letter) => {
 
 const gameController = (() => {
     const board = gameBoard.getBoard();
-    const playerOne = createPlayer("Player One", "X");
-    const playerTwo = createPlayer("Player Two", "O");
-    let activePlayer = playerOne;
+    let playerOne;
+    let playerTwo;
+    let activePlayer;
     let winner = "";
-    let gameOver = false;
+
+    const initializeGame = (playerOneName = "Player One", playerTwoName = "Player Two") => {
+        playerOne = createPlayer(playerOneName, "X");
+        playerTwo = createPlayer(playerTwoName, "O");
+        activePlayer = playerOne;
+    }
 
     const checkForWin = () => {
         const activePlayerWin = activePlayer.letter + activePlayer.letter + activePlayer.letter;
@@ -40,42 +45,33 @@ const gameController = (() => {
 
         if (activePlayerWin === columnOneString) {
             winner = activePlayer.name;
-            gameOver = true;
         }
         else if (activePlayerWin === columnTwoString) {
             winner = activePlayer.name;
-            gameOver = true;
         }
         else if (activePlayerWin === columnThreeString) {
             winner = activePlayer.name;
-            gameOver = true;
         }
         else if (activePlayerWin === rowOneString) {
             winner = activePlayer.name;
-            gameOver = true;
         }
         else if (activePlayerWin === rowTwoString) {
             winner = activePlayer.name;
-            gameOver = true;
         }
         else if (activePlayerWin === rowThreeString) {
             winner = activePlayer.name;
-            gameOver = true;
         }
         else if (activePlayerWin === diagonalOneString) {
             winner = activePlayer.name;
-            gameOver = true;
         }
         else if (activePlayerWin === diagonalTwoString) {
             winner = activePlayer.name;
-            gameOver = true;
         }
         else if (!(board.includes(null))) {
             winner = "Draw";
-            gameOver = true;
         }
 
-        return gameOver;
+        return winner;
     };
 
     const switchActivePlayer = () => {
@@ -87,5 +83,28 @@ const gameController = (() => {
         }
     };
 
-    return {checkForWin, switchActivePlayer};
+    const playRound = (index) => {
+        if (winner !== "") {
+            return;
+        }
+
+        //player places letter
+        board.placeLetter(index, activePlayer.letter);
+
+        //check for win
+        checkForWin();
+
+        //switch active player
+        switchActivePlayer();
+    };
+
+    const resetGame = () => {
+        winner = "";
+        activePlayer = playerOne;
+        for (let i = 0; i < board.length; i++) {
+            board[i] = null;
+        }
+    }
+
+    return {initializeGame, checkForWin, playRound, resetGame};
 })();
