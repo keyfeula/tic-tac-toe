@@ -1,0 +1,44 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    height: 100vh;
+    background: black;
+}
+
+.main-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    color: white;
+}
+
+.controls {
+    border: 1px solid white;
+    display: flex;
+    gap: 1rem;
+}
+
+.controls button {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    background: #ffffff;
+}
+
+.gameboard {
+    border: 1px solid #ffffff;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    font-size: 2.5rem;
+}
+
+.gameboard .cell {
+    padding: 2rem;
+    border: 1px solid #ffffff;
+}
