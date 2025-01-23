@@ -89,7 +89,7 @@ const gameController = (() => {
         }
 
         //player places letter
-        board.placeLetter(index, activePlayer.letter);
+        gameBoard.placeLetter(index, activePlayer.letter);
 
         //check for win
         checkForWin();
@@ -106,5 +106,18 @@ const gameController = (() => {
         }
     }
 
-    return {initializeGame, checkForWin, playRound, resetGame};
+    const getActivePlayer = () => activePlayer;
+
+    return {initializeGame, checkForWin, getActivePlayer, playRound, resetGame};
 })();
+
+const displayController = (() => {
+    const boardElement = document.querySelector(".gameboard");
+    boardElement.addEventListener("click", (event) => {
+        const target = event.target;
+        gameController.playRound(target.id);
+        target.textContent = gameBoard.getBoard()[target.id];
+    });
+})();
+
+gameController.initializeGame();
