@@ -20,7 +20,7 @@ const gameController = (() => {
     const board = gameBoard.getBoard();
     let playerOne;
     let playerTwo;
-    let activePlayer = null;
+    let activePlayer;
     let winner = "";
     let gameStarted = false;
 
@@ -36,8 +36,6 @@ const gameController = (() => {
         activePlayer = playerOne;
         gameStarted = true;
     }
-
-    const getGameStarted = () => gameStarted;
 
     const checkForWin = () => {
         const activePlayerWin = activePlayer.letter + activePlayer.letter + activePlayer.letter;
@@ -96,7 +94,7 @@ const gameController = (() => {
             return;
         }
 
-        if (board[index] === null && activePlayer !== null) {
+        if (board[index] === null && gameController.getGameStarted()) {
             gameBoard.placeLetter(index, activePlayer.letter);
             checkForWin();
             switchActivePlayer();
@@ -105,7 +103,6 @@ const gameController = (() => {
 
     const resetGame = () => {
         winner = "";
-        gameStarted = true;
         activePlayer = playerOne;
         for (let i = 0; i < board.length; i++) {
             board[i] = null;
@@ -116,19 +113,24 @@ const gameController = (() => {
 
     const getWinner = () => winner;
 
+    const getGameStarted = () => gameStarted;
+
     return {initializeGame, checkForWin, getActivePlayer, getWinner, playRound, resetGame, getGameStarted};
 })();
 
 const displayController = (() => {
     const boardElement = document.querySelector(".gameboard");
     const display = document.querySelector(".display");
+    const dialog = document.querySelector(".start-dialog");
+    const boardCells = document.querySelectorAll(".cell");
+
     const startBtn = document.querySelector(".start-btn");
     const resetBtn = document.querySelector(".reset-btn");
-    const dialog = document.querySelector(".start-dialog");
     const dialogSubmitBtn = document.querySelector(".form-submit-btn");
+    
     const playerOneInput = document.querySelector("input#playerOneInput");
     const playerTwoInput = document.querySelector("input#playerTwoInput");
-    const boardCells = document.querySelectorAll(".cell");
+
     let playerOneName;
     let playerTwoName;
 
@@ -139,10 +141,13 @@ const displayController = (() => {
     });
 
     resetBtn.addEventListener("click", () => {
+        if (!gameController.getGameStarted()) {
+            return;
+        }
         gameController.resetGame();
         boardCells.forEach((cell) => cell.textContent = "");
         display.textContent = `${gameController.getActivePlayer().name}'s turn`;
-    })
+    });
 
     dialogSubmitBtn.addEventListener("click", () => {
         playerOneName = playerOneInput.value;
@@ -154,6 +159,10 @@ const displayController = (() => {
 
     boardElement.addEventListener("click", (event) => {
         const target = event.target;
+        if (!(target.getAttribute("class") === "cell") || !gameController.getGameStarted()) {
+            return;
+        }
+
         gameController.playRound(target.id);
         target.textContent = gameBoard.getBoard()[target.id];
         const winner = gameController.getWinner();
