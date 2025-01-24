@@ -9,9 +9,10 @@
     </head>
     <body>
         <div class="main-container">
+            <div class="display">Press start to begin the game</div>
             <div class="controls">
-                <button>Start</button>
-                <button>Reset</button>
+                <button class="start-btn">Start</button>
+                <button class="reset-btn">Reset</button>
             </div>
             <div class="gameboard">
                 <div class="cell" id="0"></div>
@@ -26,4 +27,19 @@
             </div>
         </div>
     </body>
+    <dialog class="start-dialog">
+        <form action="" method="dialog">
+            <div class="playerOne">
+                <label for="playerOneInput" name="playerOneName">Enter player one name: </label>
+                <input type="text" id="playerOneInput" maxlength="12">
+            </div>
+            <div class="playerTwo">
+                <label for="playerTwoInput" name="playerTwoName">Enter player two name: </label>
+                <input type="text" id="playerTwoInput" maxlength="12">
+            </div>
+            <div class="form-controls">
+                <button type="button" class="form-submit-btn">Submit</button>
+            </div>
+        </form>
+    </dialog>
 </html>

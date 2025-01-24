@@ -20,14 +20,24 @@ const gameController = (() => {
     const board = gameBoard.getBoard();
     let playerOne;
     let playerTwo;
-    let activePlayer;
+    let activePlayer = null;
     let winner = "";
+    let gameStarted = false;
 
-    const initializeGame = (playerOneName = "Player One", playerTwoName = "Player Two") => {
+    const initializeGame = (playerOneName, playerTwoName) => {
+        if (playerOneName === "") {
+            playerOneName = "Player One";
+        }
+        if (playerTwoName === "") {
+            playerTwoName = "Player Two";
+        }
         playerOne = createPlayer(playerOneName, "X");
         playerTwo = createPlayer(playerTwoName, "O");
         activePlayer = playerOne;
+        gameStarted = true;
     }
+
+    const getGameStarted = () => gameStarted;
 
     const checkForWin = () => {
         const activePlayerWin = activePlayer.letter + activePlayer.letter + activePlayer.letter;
@@ -70,8 +80,6 @@ const gameController = (() => {
         else if (!(board.includes(null))) {
             winner = "Draw";
         }
-
-        return winner;
     };
 
     const switchActivePlayer = () => {
@@ -88,36 +96,76 @@ const gameController = (() => {
             return;
         }
 
-        //player places letter
-        gameBoard.placeLetter(index, activePlayer.letter);
-
-        //check for win
-        checkForWin();
-
-        //switch active player
-        switchActivePlayer();
+        if (board[index] === null && activePlayer !== null) {
+            gameBoard.placeLetter(index, activePlayer.letter);
+            checkForWin();
+            switchActivePlayer();
+        }
     };
 
     const resetGame = () => {
         winner = "";
+        gameStarted = true;
         activePlayer = playerOne;
         for (let i = 0; i < board.length; i++) {
             board[i] = null;
         }
-    }
+    };
 
     const getActivePlayer = () => activePlayer;
 
-    return {initializeGame, checkForWin, getActivePlayer, playRound, resetGame};
+    const getWinner = () => winner;
+
+    return {initializeGame, checkForWin, getActivePlayer, getWinner, playRound, resetGame, getGameStarted};
 })();
 
 const displayController = (() => {
     const boardElement = document.querySelector(".gameboard");
+    const display = document.querySelector(".display");
+    const startBtn = document.querySelector(".start-btn");
+    const resetBtn = document.querySelector(".reset-btn");
+    const dialog = document.querySelector(".start-dialog");
+    const dialogSubmitBtn = document.querySelector(".form-submit-btn");
+    const playerOneInput = document.querySelector("input#playerOneInput");
+    const playerTwoInput = document.querySelector("input#playerTwoInput");
+    const boardCells = document.querySelectorAll(".cell");
+    let playerOneName;
+    let playerTwoName;
+
+    startBtn.addEventListener("click", () => {
+        gameController.resetGame();
+        boardCells.forEach((cell) => cell.textContent = "");
+        dialog.showModal();
+    });
+
+    resetBtn.addEventListener("click", () => {
+        gameController.resetGame();
+        boardCells.forEach((cell) => cell.textContent = "");
+        display.textContent = `${gameController.getActivePlayer().name}'s turn`;
+    })
+
+    dialogSubmitBtn.addEventListener("click", () => {
+        playerOneName = playerOneInput.value;
+        playerTwoName = playerTwoInput.value;
+        gameController.initializeGame(playerOneName, playerTwoName);
+        display.textContent = `${gameController.getActivePlayer().name}'s turn`;
+        dialog.close();
+    });
+
     boardElement.addEventListener("click", (event) => {
         const target = event.target;
         gameController.playRound(target.id);
         target.textContent = gameBoard.getBoard()[target.id];
+        const winner = gameController.getWinner();
+
+        if (winner === "Draw") {
+            display.textContent = "It's a draw!";
+        }
+        else if (winner !== "") {
+            display.textContent = `${winner} is the winner!`;
+        }
+        else if (gameController.getGameStarted()) {
+            display.textContent = `${gameController.getActivePlayer().name}'s turn`;
+        }
     });
 })();
-
-gameController.initializeGame();
